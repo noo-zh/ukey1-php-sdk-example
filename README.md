@@ -5,10 +5,9 @@ This repository contains the working example for **[Ukey1 PHP SDK](https://githu
 ## Installation & Usage
 
 - Download or clone this repository to your localhost or web server.
-- Get your Ukey1 App credentials (for test environment)
-- Set your `App ID` and `Secret Key` in [example/ukey1-credentials.php](example/ukey1-credentials.php)
+- Get your Ukey1 App credentials
+- Set your `App ID`, `Secret Key` and domain name in [example/ukey1-credentials.php](example/ukey1-credentials.php)
 - Run [example/index.php](example/index.php)
-- The code around SDK is located in [example/ukey1-sdk-logic.php](example/ukey1-sdk-logic.php)
 
 ## License
 

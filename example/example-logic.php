@@ -3,13 +3,15 @@
 	namespace Example;
 	
 	include_once __DIR__ . '/autoload.php';
+  
+  use Ukey1\App;
+  use Ukey1\Endpoints\Authentication\SystemScopes;
 	
 	session_start();
 	
 	define("ACTION", "action");
 	define("ACTION_CONNECT", "auth-connect");
 	define("ACTION_GET_TOKEN", "auth-token");
-	define("ACTION_REFRESH_TOKEN", "auth-token-refresh");
 	define("ACTION_GET_USER_DETAILS", "me");
 	
 	$exception = $error = null;
@@ -29,7 +31,6 @@
 		switch (get(ACTION)) {
 			case ACTION_CONNECT:
 			case ACTION_GET_TOKEN:
-			case ACTION_REFRESH_TOKEN:
 			case ACTION_GET_USER_DETAILS:
 				return get(ACTION);
 		}
@@ -65,3 +66,32 @@
 		
 		return null;
 	}
+  
+  function readAvailableScopes($token = null, &$rejected = null)
+  {
+    try {
+      $app = new App();
+      $app->appId(APP_ID)
+        ->secretKey(SECRET_KEY);
+
+      $module = new SystemScopes($app);
+      
+      if ($token) {
+        $module->setAccessToken($token);
+      }
+      
+      $permissions = $module->getAvailablePermissions();
+      
+      if ($token) {
+        $rejected = $module->getRejectedPermissions();
+        
+        if ($rejected) {
+          $rejected = implode(", ", $rejected["global"]);
+        }
+      }
+
+      return implode(", ", $permissions["global"]);
+    } catch (\Exception $e) {
+      return $e->getMessage();
+    }
+  }

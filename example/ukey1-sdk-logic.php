@@ -9,7 +9,6 @@
 	use Ukey1\App;
 	use Ukey1\Endpoints\Authentication\Connect;
 	use Ukey1\Endpoints\Authentication\AccessToken;
-	use Ukey1\Endpoints\Authentication\RefreshToken;
 	use Ukey1\Endpoints\Authentication\User;
 	use Ukey1\Generators\RandomString;
 	
@@ -22,20 +21,21 @@
 			$app->appId(APP_ID)
 				->secretKey(SECRET_KEY);
 
-			$requestId = RandomString::generate(16); // returns string with the length of 32 chars
+			$requestId = RandomString::generate(64); // returns string with the length of 128 chars
 			$returnUrl = getUrl(ACTION_GET_TOKEN);
 
 			$module = new Connect($app);
 			$module->setRequestId($requestId)
 				->setReturnUrl($returnUrl)
 				->setScope([
-					"access_token",
-					"refresh_token",
-					"email",
-					"image"
+					"country",
+          "language!",
+          "firstname!",
+          "surname",
+          "email",
+          "image"
 				]);
 
-			$module->execute();
 			$connectId = $module->getId();
 
 			// Note that you need to store these values (at least temporarily)...
@@ -60,63 +60,26 @@
 			$module->setRequestId(getSession("request_id"))
 				->setConnectId(getSession("connect_id"));
 			
-			$check = $module->execute();
+			$check = $module->check();
 			
 			if ($check) {
 				// Now you can get your access token
-				// If you want, you can store it in your database and use it later
-				// Refresh token serves for refreshing your current access token (anytime)
 				
 				$accessToken = $module->getAccessToken(); // you can store the access token in your database (
 				$accessTokenExpiration = $module->getAccessTokenExpiration();
-				$refreshToken = $module->getRefreshToken();
 				$grantedScope = $module->getScope();
 				
 				// This is only for this example...
 				
 				saveSession("access_token", $accessToken);
 				saveSession("expiration", $accessTokenExpiration);
-				saveSession("refresh_token", $refreshToken);
-				saveSession("scope", implode(", ", $grantedScope));
+				saveSession("scope", $grantedScope);
 				
 				header("Location: " . getUrl(ACTION_GET_USER_DETAILS));
 			}
 			else {
 				$action = null;
-				$exception = "The request was canceled (by user) or expired.";
-			}
-		}
-		
-		elseif ($action == ACTION_REFRESH_TOKEN) {
-			// Refreshes the access token
-			
-			if (getSession("refresh_token")) {
-				$app = new App();
-				$app->appId(APP_ID)
-					->secretKey(SECRET_KEY);
-
-				$module = new RefreshToken($app);
-				$module->setRefreshToken(getSession("refresh_token"));
-
-				$module->execute();
-
-				// Now you can get your access token
-				// If you want, you can store it in your database and use it later
-				// Refresh token serves for refreshing your current access token (anytime)
-
-				$accessToken = $module->getAccessToken(); // you can store the access token in your database (
-				$accessTokenExpiration = $module->getAccessTokenExpiration();
-				$refreshToken = $module->getRefreshToken();
-				$grantedScope = $module->getScope();
-
-				// This is only for this example...
-
-				saveSession("access_token", $accessToken);
-				saveSession("expiration", $accessTokenExpiration);
-				saveSession("refresh_token", $refreshToken);
-				saveSession("scope", implode(", ", $grantedScope));
-
-				header("Location: " . getUrl(ACTION_GET_USER_DETAILS));
+				$exception = "The request was canceled (by user).";
 			}
 		}
 		
@@ -129,36 +92,31 @@
 			
 			$module = new User($app);
 			$module->setAccessToken(getSession("access_token"));
+      
+      $resultData["user_id"] = $module->id(); // ID is parsed from access token (i.e. you can get user's ID before you make a call for details)
+      $resultData["token_state"] = ($module->valid() ? "valid": "expired");
+      $resultData["json"] = $resultData["array"] = "- no data -";
+      
+      // now you can make a call for details (or not if you need only user's ID)
 			
-			$rawJSON = $module->execute(); // returns raw JSON string
+      if ($module->valid()) {
+        $rawJSON = $module->raw(); // returns raw JSON string
+
+        $resultData["json"] = $rawJSON;
+        $resultData["array"] = print_r(json_decode($rawJSON, true), true);
+      }
 			
-			// This is only for this example...
+			// You can also get indiviual fields using the following methods
 			
-			$resultData["json"] = $rawJSON;
-			$resultData["array"] = print_r(json_decode($rawJSON, true), true);
-			
-			// You can also get indiviual fields via the following methods
-			
-			/*$user = $module->getUser(); // an entity of the user
-			
-			if ($user->check()) { // checks if you still have authorized access (because user may cancel their consent anytime)
-				$user->id();
-				$user->fullname();
+			/*$user = $module->user(); // an entity of the user
+        $user->scope();
+        $user->id();
 				$user->firstname();
 				$user->surname();
 				$user->language();
 				$user->country();
 				$user->email();
-				$user->thumbnailUrl();
-				$thumbnail = $user->thumbnailEntity();
-				
-				if (!$thumbnail->isDefault()) {
-					$thumbnail->url();
-					$thumbnail->download();
-					$thumbnail->width();
-					$thumbnail->height();
-				}
-			}*/
+				$user->image();*/
 		}
 	}
 	catch (\Exception $e) {

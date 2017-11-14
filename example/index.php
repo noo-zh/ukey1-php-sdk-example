@@ -4,7 +4,7 @@
 	
 	include_once __DIR__ . '/autoload.php';
 	include_once __DIR__ . '/example-logic.php';
-	include_once __DIR__ . '/ukey1-credentials.php'; // There is your credentials here
+	include_once __DIR__ . '/ukey1-credentials.php'; // There are your credentials here
 	include_once __DIR__ . '/ukey1-sdk-logic.php'; // There is an example code here
 
 ?>
@@ -14,7 +14,7 @@
     <head>
         <meta charset="UTF-8">
         <title>ukey1-php-sdk example</title>
-		<link rel="stylesheet" type="text/css" href="https://gitcdn.xyz/repo/asaritech/ukey1-signin-button/master/css/ukey1-button.min.css" media="screen">
+		<link rel="stylesheet" type="text/css" href="https://gateway.ukey1cdn.com/components/ukey1-signin-button/v1/ukey1-button.min.css" media="screen">
 		<style>
 			body {
 				padding: 50px;
@@ -40,18 +40,25 @@
 		
 		
 		
-<?php } elseif ($action == ACTION_REFRESH_TOKEN) { ?>
-		
-		
-		
-<?php } elseif ($action == ACTION_GET_USER_DETAILS) { ?>
+<?php 
+
+} elseif ($action == ACTION_GET_USER_DETAILS && getSession("access_token")) { 
+    $available = $rejected = "";
+    
+    if ($resultData["token_state"] == "valid") {
+        $available = readAvailableScopes(getSession("access_token"), $rejected);
+    }
+
+?>
 		
 		<p>
 			<strong>DEBUG INFO:</strong><br/>
-			Access token: <input value="<?= getSession("access_token"); ?>" readonly="readonly"><br/>
-			Expiration: <input value="<?= getSession("expiration"); ?>" readonly="readonly"><br/>
-			Refresh token: <input value="<?= (getSession("refresh_token") ? getSession("refresh_token") : "- no refresh token -"); ?>" readonly="readonly"><br/>
-			Scope: <input value="<?= getSession("scope"); ?>" readonly="readonly">
+			Access Token: <input value="<?= getSession("access_token"); ?>" readonly="readonly"><br/>
+			Expiration: <input value="<?= date("Y-m-d H:i:s", getSession("expiration")); ?>" readonly="readonly"><br/>
+      Available permissions: <input value="<?= $available; ?>" readonly="readonly"><br/>
+      Rejected permissions: <input value="<?= $rejected; ?>" readonly="readonly"><br/>
+			User ID: <input value="<?= $resultData["user_id"]; ?>" readonly="readonly"><br/>
+			State: <input value="<?= $resultData["token_state"]; ?>" readonly="readonly">
 		</p>
 		
 		<p>
@@ -60,9 +67,7 @@
 			Encoded array: <pre><?= $resultData["array"]; ?></pre>
 		</p>
 		
-		<?php if (getSession("refresh_token")) { ?>
-		<p><a href="<?= getUrl(ACTION_REFRESH_TOKEN); ?>">Refresh token now</a> | <a href="<?= getUrl(); ?>">Try it again</a></p>
-		<?php } ?>
+		<p><a href="<?= getUrl(); ?>">Try it again</a></p>
 		
 <?php } elseif ($action == ACTION_CONNECT) { ?>
 		
@@ -70,6 +75,7 @@
 		
 <?php } else { ?>
 		
+    <p>Available scopes: <strong><?= readAvailableScopes(); ?></strong></p>
 		<p><a href="<?= getUrl(ACTION_CONNECT); ?>" class="ukey1-button">Sign in to this example</a></p>
 		<p>Get this sign-in button <a href="https://github.com/asaritech/ukey1-signin-button">on GitHub</a>.</p>
 		
