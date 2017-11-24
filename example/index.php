@@ -14,7 +14,7 @@
     <head>
         <meta charset="UTF-8">
         <title>ukey1-php-sdk example</title>
-		<link rel="stylesheet" type="text/css" href="https://gateway.ukey1cdn.com/components/ukey1-signin-button/v1/ukey1-button.min.css" media="screen">
+		<link rel="stylesheet" type="text/css" href="https://code.ukey1cdn.com/ukey1-signin-button/master/css/ukey1-button.min.css" media="screen">
 		<style>
 			body {
 				padding: 50px;
