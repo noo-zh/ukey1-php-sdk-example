@@ -13,6 +13,9 @@
 	define("ACTION_CONNECT", "auth-connect");
 	define("ACTION_GET_TOKEN", "auth-token");
 	define("ACTION_GET_USER_DETAILS", "me");
+	define("ACTION_EXTRANET_UM", "extranet-user-management");
+  define("ACTION_EXTRANET_ADD_USER", "extranet-add-user");
+	define("ACTION_EXTRANET_AUTOLOGIN", "extranet-auto-login");
 	
 	$exception = $error = null;
 	$resultData = ["json" => "", "array" => ""];
@@ -32,8 +35,14 @@
 			case ACTION_CONNECT:
 			case ACTION_GET_TOKEN:
 			case ACTION_GET_USER_DETAILS:
+      case ACTION_EXTRANET_UM:
+			case ACTION_EXTRANET_ADD_USER:
+			case ACTION_EXTRANET_AUTOLOGIN:
 				return get(ACTION);
 		}
+    
+    saveSession("extranet_reference_id", null);
+    saveSession("extranet_success_status", null);
 		
 		return null;
 	}

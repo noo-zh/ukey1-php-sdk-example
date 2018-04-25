@@ -71,6 +71,42 @@
 		
 <?php } elseif ($action == ACTION_CONNECT) { ?>
 		
+    
+    
+<?php } elseif ($action == ACTION_EXTRANET_UM) { ?>
+		
+    <p><strong>Add user to your <q>extranet</q></strong></p>
+    
+    <form action="<?= getUrl(); ?>" method="GET">
+      <input type="email" name="your_email" required placeholder="Your valid email (we will send you the invitation link)">
+      <select name="your_locale">
+        <option selected="selected">en_GB</option>
+        <option>cs_CZ</option>
+      </select>
+      <input type="hidden" name="<?= ACTION; ?>" value="<?= ACTION_EXTRANET_ADD_USER; ?>">
+      <button type="submit">Create</button>
+    </form>
+    
+		<p>This feature is for premium apps only.</p>
+    
+<?php } elseif ($action == ACTION_EXTRANET_ADD_USER) { ?>
+		
+    <?php if (getSession("extranet_reference_id")) { ?>
+    <p>Success</p>
+    
+    <p>
+			<strong>DEBUG INFO:</strong><br/>
+			Extranet Reference ID: <input value="<?= getSession("extranet_reference_id"); ?>" readonly="readonly"><br/>
+			Success Status: <input value="<?= getSession("extranet_success_status"); ?>" readonly="readonly">
+		</p>
+    
+    <p>Check your inbox for the invitation...</p>
+    <?php } ?>
+    
+    <p><a href="<?= getUrl(); ?>">Go to start</a></p>
+    
+<?php } elseif ($action == ACTION_EXTRANET_AUTOLOGIN) { ?>
+		
 		
 		
 <?php } else { ?>
@@ -78,6 +114,7 @@
     <p>Available scopes: <strong><?= readAvailableScopes(); ?></strong></p>
 		<p><a href="<?= getUrl(ACTION_CONNECT); ?>" class="ukey1-button">Sign in to this example</a></p>
 		<p>Get this sign-in button <a href="https://github.com/asaritech/ukey1-signin-button">on GitHub</a>.</p>
+    <p>Try new feature <a href="<?= getUrl(ACTION_EXTRANET_UM); ?>">Private users</a> for premium apps.</p>
 		
 <?php } ?>
 
