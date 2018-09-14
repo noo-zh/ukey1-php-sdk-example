@@ -49,7 +49,9 @@
 	
 	function getUrl($action = null)
 	{
-		$baseUrl = $_SERVER["REQUEST_SCHEME"] . "://" . $_SERVER["HTTP_HOST"] . ":" . $_SERVER["SERVER_PORT"];
+        $scheme = !empty($_SERVER["HTTPS"]) && strcasecmp($_SERVER["HTTPS"], "off") ? "https" : "http";
+        $host = isset($_SERVER["HTTP_HOST"]) ? $_SERVER["HTTP_HOST"] : $_SERVER["SERVER_NAME"] . ":" . $_SERVER["SERVER_PORT"];
+		$baseUrl = $scheme . "://" . $host;
 		$fullUrl = $baseUrl . $_SERVER["REQUEST_URI"];
 		
 		$parsedUrl = parse_url($fullUrl);
