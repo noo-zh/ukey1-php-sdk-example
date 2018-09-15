@@ -19,8 +19,8 @@
 			// Inits of connection with Ukey1 and redirects user to Ukey1 gateway
 			
 			$app = new App();
-			$app->appId(APP_ID)
-				->secretKey(SECRET_KEY);
+			$app->setAppId(APP_ID)
+				->setSecretKey(SECRET_KEY);
 
 			$requestId = RandomString::generate(64); // returns string with the length of 128 chars
 			$returnUrl = getUrl(ACTION_GET_TOKEN);
@@ -54,8 +54,8 @@
 			// Checks returned status and gets access token
 			
 			$app = new App();
-			$app->appId(APP_ID)
-				->secretKey(SECRET_KEY);
+			$app->setAppId(APP_ID)
+				->setSecretKey(SECRET_KEY);
 			
 			$module = new AccessToken($app);
 			$module->setRequestId(getSession("request_id"))
@@ -88,13 +88,13 @@
 			// Gets user's data
 			
 			$app = new App();
-			$app->appId(APP_ID)
-				->secretKey(SECRET_KEY);
+			$app->setAppId(APP_ID)
+				->setSecretKey(SECRET_KEY);
 			
 			$module = new User($app);
 			$module->setAccessToken(getSession("access_token"));
       
-      $resultData["user_id"] = $module->id(); // ID is parsed from access token (i.e. you can get user's ID before you make a call for details)
+      $resultData["user_id"] = $module->getId(); // ID is parsed from access token (i.e. you can get user's ID before you make a call for details)
       $resultData["token_state"] = ($module->valid() ? "valid": "expired");
       $resultData["json"] = $resultData["array"] = "- no data -";
       
@@ -124,8 +124,8 @@
       // Create extranet user
       
       $app = new App();
-			$app->appId(APP_ID)
-				->secretKey(SECRET_KEY);
+			$app->setAppId(APP_ID)
+				->setSecretKey(SECRET_KEY);
       
       $module = new ExtranetUsers($app);
       $module->setEmail(get("your_email"));
@@ -146,8 +146,8 @@
 			// Inits of connection with Ukey1 and redirects user to Ukey1 gateway
 			
 			$app = new App();
-			$app->appId(APP_ID)
-				->secretKey(SECRET_KEY);
+			$app->setAppId(APP_ID)
+				->setSecretKey(SECRET_KEY);
 
 			$requestId = RandomString::generate(64); // returns string with the length of 128 chars
 			$returnUrl = getUrl(ACTION_GET_TOKEN);
