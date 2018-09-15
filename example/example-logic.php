@@ -82,8 +82,8 @@
   {
     try {
       $app = new App();
-      $app->appId(APP_ID)
-        ->secretKey(SECRET_KEY);
+      $app->setAppId(APP_ID)
+        ->setSecretKey(SECRET_KEY);
 
       $module = new SystemScopes($app);
       
