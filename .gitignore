@@ -2,3 +2,5 @@ vendor/
 nbproject/
 composer.phar
 composer.lock
+test-composer.json
+example/test-ukey1-credentials.php
